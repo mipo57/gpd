@@ -95,6 +95,7 @@ add_message_files(FILES CloudIndexed.msg CloudSamples.msg CloudSources.msg Grasp
 add_service_files(DIRECTORY srv
  FILES
    SetParameters.srv
+   FindGrasps.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -148,7 +149,7 @@ DEPENDS EIGEN3 OpenCV PCL
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include ${catkin_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} "/opt/ros/melodic/include/")
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}_classifier ${classifier_src})
@@ -169,6 +170,7 @@ add_library(${PROJECT_NAME}_grasp_image_15_channels src/${PROJECT_NAME}/grasp_im
 
 ## Declare C++ executables
 add_executable(${PROJECT_NAME}_detect_grasps src/nodes/grasp_detection_node.cpp)
+add_executable(${PROJECT_NAME}_detect_grasps_service src/nodes/grasp_detection_service.cpp)
 add_executable(${PROJECT_NAME}_generate_candidates src/nodes/generate_candidates.cpp)
 add_executable(${PROJECT_NAME}_create_grasp_images src/nodes/create_grasp_images.cpp)
 if(USE_CAFFE STREQUAL "ON")
@@ -246,6 +248,12 @@ target_link_libraries(${PROJECT_NAME}_detect_grasps
                       ${GENERATOR_LIB}
                       ${PCL_LIBRARIES})
 
+target_link_libraries(${PROJECT_NAME}_detect_grasps_service
+                      ${PROJECT_NAME}_grasp_detector
+                      ${PROJECT_NAME}_sequential_importance_sampling
+                      ${GENERATOR_LIB}
+                      ${PCL_LIBRARIES})
+
 target_link_libraries(${PROJECT_NAME}_sequential_importance_sampling
                       ${PROJECT_NAME}_grasp_detector)
 
@@ -266,6 +274,10 @@ target_link_libraries(${PROJECT_NAME}_learning
 # Rename targets to simplify their names.
 set_target_properties(${PROJECT_NAME}_detect_grasps
                       PROPERTIES OUTPUT_NAME detect_grasps
+                      PREFIX "")
+
+set_target_properties(${PROJECT_NAME}_detect_grasps_service
+                      PROPERTIES OUTPUT_NAME detect_grasps_service
                       PREFIX "")
 
 set_target_properties(${PROJECT_NAME}_classify_candidates
