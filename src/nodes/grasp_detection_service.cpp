@@ -222,7 +222,7 @@ GraspDetectionNode::GraspDetectionNode(ros::NodeHandle& node) : has_cloud_(false
 
 void GraspDetectionNode::run()
 {
-  ros::Rate rate(100);
+  ros::Rate rate(5);
   ROS_INFO("Waiting for point cloud to arrive ...");
 
   while (ros::ok())
@@ -246,7 +246,6 @@ void GraspDetectionNode::run()
       // has_cloud_ = false;
       // has_samples_ = false;
       // has_normals_ = false;
-      ROS_INFO("Waiting for point cloud to arrive ...");
     }
 
     ros::spinOnce();
@@ -300,7 +299,7 @@ void GraspDetectionNode::set_cloud(const sensor_msgs::PointCloud2& msg)
 {
   if (cloud_camera_)
     delete cloud_camera_;
-    
+
   cloud_camera_ = NULL;
 
   Eigen::Matrix3Xd view_points(3,1);
